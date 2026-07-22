@@ -1,65 +1,135 @@
-import { useEffect, useState } from "react";
+import {
+    useEffect,
+    useState
+} from "react";
 
-function ChatWindow() {
-  const [messages, setMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8000/ws/subbu");
+function Chat({conversationId, userId}) {
 
-    ws.onopen = () => {
-      console.log("Connected");
-    };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    const [socket,setSocket] = useState(null);
 
-      console.log(data);
+    const [messages,setMessages] = useState([]);
 
-      setMessages((prev) => [
-        ...prev,
-        data
-      ]);
-    };
+    const [text,setText] = useState("");
 
-    ws.onclose = () => {
-      console.log("Disconnected");
-    };
 
-    setSocket(ws);
 
-    // cleanup when component unmounts
-    return () => {
-      ws.close();
-    };
-  }, []);
+    useEffect(()=>{
 
-  const sendMessage = () => {
-    socket.send(
-      JSON.stringify({
-        to: "rama",
-        message: "Hello from subbu"
-      })
+
+        const ws = new WebSocket(
+            `ws://localhost:8000/ws/chat/${conversationId}`
+        );
+
+
+        ws.onopen = ()=>{
+
+            console.log(
+                "connected"
+            );
+
+        };
+
+
+        ws.onmessage = (event)=>{
+
+            const message =
+                JSON.parse(event.data);
+
+
+            setMessages(prev=>[
+                ...prev,
+                message
+            ]);
+
+        };
+
+
+        setSocket(ws);
+
+
+
+        return ()=>{
+
+            ws.close();
+
+        };
+
+
+    },[conversationId]);
+
+
+
+
+    function sendMessage(){
+
+
+        socket.send(
+            JSON.stringify({
+
+                sender_id:userId,
+
+                message:text
+
+            })
+        );
+
+
+        setText("");
+
+    }
+
+
+
+
+    return (
+
+        <div>
+
+
+            <h3>
+                Conversation {conversationId}
+            </h3>
+
+
+            {
+                messages.map(msg=>(
+
+                    <p key={msg.id}>
+
+                        User {msg.sender_id}:
+                        {msg.message}
+
+                    </p>
+
+                ))
+            }
+
+
+
+            <input
+
+                value={text}
+
+                onChange={
+                    e=>setText(e.target.value)
+                }
+
+            />
+
+
+            <button
+                onClick={sendMessage}
+            >
+                Send
+            </button>
+
+
+        </div>
+
     );
-  };
-
-  return (
-    <div>
-      <h2>Chat</h2>
-
-      <button onClick={sendMessage}>
-        Send Message
-      </button>
-
-      <ul>
-        {messages.map((msg, index) => (
-          <li key={index}>
-            {msg.from}: {msg.message}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
 
-export default ChatWindow;
+
+export default Chat;

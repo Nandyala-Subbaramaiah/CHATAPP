@@ -1,14 +1,55 @@
-import ChatWindow from "./components/chat-window";
+import {
+    useState
+} from "react";
 
-function App() {
-  return (
-     <div>
+import Users from "./Users";
+import Chat from "./components/Chat";
 
-    <chat-window username="subbu"/>
 
-    </div>
+function App(){
 
-  );
+    const [conversationId,setConversationId]
+        = useState(null);
+
+
+    const loggedInUserId = 1;
+
+
+    return (
+
+        <div>
+
+
+            <Users
+                openChat={setConversationId}
+            />
+
+
+
+            {
+                conversationId && (
+
+                    <Chat
+
+                        conversationId={
+                            conversationId
+                        }
+
+                        userId={
+                            loggedInUserId
+                        }
+
+                    />
+
+                )
+            }
+
+
+        </div>
+
+    );
+
 }
+
 
 export default App;
