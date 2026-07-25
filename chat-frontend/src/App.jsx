@@ -1,55 +1,30 @@
 import {
-    useState
-} from "react";
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
-import Users from "./Users";
-import Chat from "./components/Chat";
+import UsersPage from "./pages/UsersPage";
+import ChatPage from "./pages/ChatPage";
 
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
 
-function App(){
+        <Route
+          path="/"
+          element={<UsersPage />}
+        />
 
-    const [conversationId,setConversationId]
-        = useState(null);
+        <Route
+          path="/chat/:conversationId"
+          element={<ChatPage />}
+        />
 
-
-    const loggedInUserId = 1;
-
-
-    return (
-
-        <div>
-
-
-            <Users
-                openChat={setConversationId}
-            />
-
-
-
-            {
-                conversationId && (
-
-                    <Chat
-
-                        conversationId={
-                            conversationId
-                        }
-
-                        userId={
-                            loggedInUserId
-                        }
-
-                    />
-
-                )
-            }
-
-
-        </div>
-
-    );
-
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
 
 export default App;
