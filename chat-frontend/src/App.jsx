@@ -1,13 +1,29 @@
-import ChatWindow from "./components/chat-window";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+import UsersPage from "./pages/UsersPage";
+import ChatPage from "./pages/ChatPage";
 
 function App() {
   return (
-     <div>
+    <BrowserRouter>
+      <Routes>
 
-    <chat-window username="subbu"/>
+        <Route
+          path="/"
+          element={<UsersPage />}
+        />
 
-    </div>
+        <Route
+          path="/chat/:conversationId"
+          element={<ChatPage />}
+        />
 
+      </Routes>
+    </BrowserRouter>
   );
 }
 
