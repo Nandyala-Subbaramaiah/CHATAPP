@@ -1,10 +1,10 @@
 import { apiClient } from "./apiClient";
 
 export async function getMessages(
-  conversationId
+  conversation_id
 ) {
   const response = await fetch(
-    `http://localhost:8000/messages/${conversationId}`
+    `http://localhost:8000/messages/${conversation_id}`
   );
 
   if (!response.ok) {

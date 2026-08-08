@@ -1,4 +1,4 @@
-import {
+import React, {
   useCallback,
   useEffect,
   useState,
@@ -273,9 +273,8 @@ function ChatPage() {
       ) : (
 
         <MessageList
-          messages={
-            messages
-          }
+          messages={messages}
+          loading={loading}
         />
 
       )}

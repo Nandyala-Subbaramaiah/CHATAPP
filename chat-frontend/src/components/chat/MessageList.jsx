@@ -1,4 +1,4 @@
-import {
+import React, {
   useEffect,
   useState,
 } from "react";
@@ -10,38 +10,9 @@ import {
 import Message from "./Message";
 
 function MessageList({
-  conversationId,
+  messages = [],
+  loading = false,
 }) {
-  const [messages, setMessages] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  useEffect(() => {
-    async function loadMessages() {
-      try {
-        const data =
-          await getMessages(
-            conversationId
-          );
-
-        setMessages(data);
-      } catch (error) {
-        console.error(
-          "Failed to load messages:",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (conversationId) {
-      loadMessages();
-    }
-  }, [conversationId]);
-
   if (loading) {
     return (
       <p>

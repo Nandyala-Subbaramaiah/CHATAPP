@@ -2,12 +2,16 @@ let socket = null;
 
 
 export function connectWebSocket(
-  conversationId,
+  conversation_id,
   onMessage
 ) {
 
+  if (socket) {
+    socket.close();
+  }
+
   socket = new WebSocket(
-    `ws://localhost:8000/ws/${conversationId}`
+    `ws://localhost:8000/ws/${conversation_id}`
   );
 
 
@@ -16,6 +20,15 @@ export function connectWebSocket(
     console.log(
       "WebSocket connected"
     );
+
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "JOIN",
+          conversation_id,
+        })
+      );
+    }
 
   };
 
@@ -27,7 +40,9 @@ export function connectWebSocket(
       const data =
         JSON.parse(event.data);
 
-      onMessage(data);
+      if (typeof onMessage === "function") {
+        onMessage(data);
+      }
 
     } catch (error) {
 
@@ -61,6 +76,21 @@ export function connectWebSocket(
 
 
   return socket;
+
+}
+
+
+export function sendSocketMessage(
+  payload
+) {
+
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    return;
+  }
+
+  socket.send(
+    JSON.stringify(payload)
+  );
 
 }
 

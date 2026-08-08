@@ -1,16 +1,22 @@
+import React from "react";
+
 function Message({ message }) {
+  const createdAt = message.created_at || message.createdAt;
+
   return (
     <div>
       <strong>
-        {message.senderName}
+        {message.sender_id ?? message.senderId ?? "User"}
       </strong>
 
       <p>
-        {message.content}
+        {message.message ?? message.content}
       </p>
 
       <small>
-        {message.createdAt}
+        {createdAt
+          ? new Date(createdAt).toLocaleString()
+          : "Just now"}
       </small>
     </div>
   );
