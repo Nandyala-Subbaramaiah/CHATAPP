@@ -1,39 +1,25 @@
-import { useState } from "react";
-
-import {
-  sendMessage,
-} from "../../api/messageApi";
+import React, { useState } from "react";
 
 function MessageInput({
-  conversationId,
+  onSend,
+  sending,
 }) {
   const [message, setMessage] =
     useState("");
 
-  const [sending, setSending] =
-    useState(false);
-
   async function handleSend() {
-    if (!message.trim()) {
+    if (!message.trim() || !onSend) {
       return;
     }
 
     try {
-      setSending(true);
-
-      await sendMessage(
-        conversationId,
-        message
-      );
-
+      await onSend(message);
       setMessage("");
     } catch (error) {
       console.error(
         "Failed to send message:",
         error
       );
-    } finally {
-      setSending(false);
     }
   }
 

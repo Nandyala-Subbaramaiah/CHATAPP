@@ -1,10 +1,10 @@
 import { apiClient } from "./apiClient";
 
 export async function getMessages(
-  conversationId
+  conversation_id
 ) {
   const response = await fetch(
-    `http://localhost:8000/messages/${conversationId}`
+    `http://localhost:8000/messages/${conversation_id}`
   );
 
   if (!response.ok) {
@@ -16,28 +16,31 @@ export async function getMessages(
   return response.json();
 }
 
-async function sendMessage(text) {
-  try {
-    setSending(true);
+export async function sendMessage(
+  conversationId,
+  senderId,
+  text
+) {
+  const response = await fetch(
+    "http://localhost:8000/messages/",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        sender_id: senderId,
+        message: text,
+      }),
+    }
+  );
 
-    await sendMessageApi(
-      conversationId,
-      currentUserId,
-      text
+  if (!response.ok) {
+    throw new Error(
+      "Failed to send message"
     );
-
-  } catch (error) {
-
-    console.error(
-      "Failed to send message:",
-      error
-    );
-
-    throw error;
-
-  } finally {
-
-    setSending(false);
-
   }
+
+  return response.json();
 }

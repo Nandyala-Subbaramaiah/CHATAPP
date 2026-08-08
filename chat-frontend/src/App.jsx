@@ -1,11 +1,13 @@
+import React from "react";
+
 import {
   BrowserRouter,
   Routes,
   Route,
 } from "react-router-dom";
 
-import UsersPage from "./pages/UsersPage";
-import ChatPage from "./pages/ChatPage";
+import UsersPage from "./pages/usersPage";
+import ChatPage from "./pages/chatPage";
 
 function App() {
   return (

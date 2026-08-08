@@ -1,18 +1,19 @@
+import React from "react";
+
 function ChatHeader({
   conversation,
+  conversationId,
   online,
   typing,
 }) {
-  if (!conversation) {
-    return null;
-  }
+  const name = conversation?.name || `Conversation ${conversationId || "-"}`;
 
   return (
     <header>
       {/* User information */}
       <div>
         <h2>
-          {conversation.name}
+          {name}
         </h2>
 
         {typing ? (
