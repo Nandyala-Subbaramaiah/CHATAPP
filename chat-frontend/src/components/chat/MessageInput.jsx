@@ -4,10 +4,11 @@ function MessageInput({
   onSend,
   sending,
 }) {
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
-  async function handleSend() {
+  async function handleSend(event) {
+    event?.preventDefault();
+
     if (!message.trim() || !onSend) {
       return;
     }
@@ -16,34 +17,24 @@ function MessageInput({
       await onSend(message);
       setMessage("");
     } catch (error) {
-      console.error(
-        "Failed to send message:",
-        error
-      );
+      console.error("Failed to send message:", error);
     }
   }
 
   return (
-    <div>
+    <form className="chat-composer" onSubmit={handleSend}>
       <input
+        type="text"
         value={message}
-        onChange={(event) =>
-          setMessage(
-            event.target.value
-          )
-        }
-        placeholder="Type a message..."
+        onChange={(event) => setMessage(event.target.value)}
+        placeholder="Write a message..."
+        aria-label="Type a message"
       />
 
-      <button
-        onClick={handleSend}
-        disabled={sending}
-      >
-        {sending
-          ? "Sending..."
-          : "Send"}
+      <button type="submit" disabled={sending || !message.trim()}>
+        {sending ? "Sending..." : "Send"}
       </button>
-    </div>
+    </form>
   );
 }
 

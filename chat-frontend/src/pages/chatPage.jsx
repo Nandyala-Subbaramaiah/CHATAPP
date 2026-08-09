@@ -19,281 +19,136 @@ import {
 
 import useWebSocket from "../hooks/useWebSocket";
 
-
 function ChatPage() {
-
-  const {
-    conversationId,
-  } = useParams();
-
-
-  // -------------------------
-  // Temporary current user
-  // -------------------------
-
+  const { conversationId } = useParams();
   const currentUserId = 1;
 
-
-  // -------------------------
-  // State
-  // -------------------------
-
-  const [
-    messages,
-    setMessages,
-  ] = useState([]);
-
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-  const [
-    sending,
-    setSending,
-  ] = useState(false);
-
-  const [
-    online,
-    setOnline,
-  ] = useState(false);
-
-  const [
-    typing,
-    setTyping,
-  ] = useState(false);
-
-
-  // -------------------------
-  // Load messages
-  // -------------------------
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [online, setOnline] = useState(true);
+  const [typing, setTyping] = useState(false);
 
   async function loadMessages() {
-
     try {
-
       setLoading(true);
-
-      const data =
-        await getMessages(
-          conversationId
-        );
-
+      const data = await getMessages(conversationId);
       setMessages(data);
-
     } catch (error) {
-
-      console.error(
-        "Failed to load messages:",
-        error
-      );
-
+      console.error("Failed to load messages:", error);
     } finally {
-
       setLoading(false);
-
     }
-
   }
 
-
-  // -------------------------
-  // Load messages
-  // when conversation changes
-  // -------------------------
-
   useEffect(() => {
-
     if (!conversationId) {
       return;
     }
 
     loadMessages();
+  }, [conversationId]);
 
-  }, [
-    conversationId,
-  ]);
+  const handleWebSocketMessage = useCallback((data) => {
+    console.log("WebSocket event:", data);
 
-
-  // -------------------------
-  // WebSocket events
-  // -------------------------
-
-  const handleWebSocketMessage =
-    useCallback((data) => {
-
-      console.log(
-        "WebSocket event:",
-        data
-      );
-
-
-      switch (data.type) {
-
-        case "NEW_MESSAGE":
-
-          setMessages(
-            (currentMessages) => {
-
-              const exists =
-                currentMessages.some(
-                  (message) =>
-                    message.id ===
-                    data.message.id
-                );
-
-              if (exists) {
-                return currentMessages;
-              }
-
-              return [
-                ...currentMessages,
-                data.message,
-              ];
-
-            }
+    switch (data.type) {
+      case "NEW_MESSAGE":
+        setMessages((currentMessages) => {
+          const exists = currentMessages.some(
+            (message) => message.id === data.message.id
           );
 
-          break;
+          if (exists) {
+            return currentMessages;
+          }
 
+          return [...currentMessages, data.message];
+        });
+        break;
 
-        case "USER_ONLINE":
+      case "USER_ONLINE":
+        setOnline(true);
+        break;
 
-          setOnline(true);
+      case "USER_OFFLINE":
+        setOnline(false);
+        break;
 
-          break;
+      case "TYPING_START":
+        setTyping(true);
+        break;
 
+      case "TYPING_STOP":
+        setTyping(false);
+        break;
 
-        case "USER_OFFLINE":
-
-          setOnline(false);
-
-          break;
-
-
-        case "TYPING_START":
-
-          setTyping(true);
-
-          break;
-
-
-        case "TYPING_STOP":
-
-          setTyping(false);
-
-          break;
-
-
-        default:
-
-          console.log(
-            "Unknown event:",
-            data.type
-          );
-
-      }
-
-    }, []);
-
-
-  // -------------------------
-  // WebSocket
-  // -------------------------
-
-  useWebSocket(
-    conversationId,
-    handleWebSocketMessage
-  );
-
-
-  // -------------------------
-  // Send message
-  // -------------------------
-
-  async function sendMessage(
-    text
-  ) {
-
-    try {
-
-      setSending(true);
-
-      await sendMessageApi(
-        conversationId,
-        currentUserId,
-        text
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Failed to send message:",
-        error
-      );
-
-      throw error;
-
-    } finally {
-
-      setSending(false);
-
+      default:
+        console.log("Unknown event:", data.type);
     }
+  }, []);
 
+  useWebSocket(conversationId, handleWebSocketMessage, currentUserId);
+
+  async function sendMessage(text) {
+    try {
+      setSending(true);
+      await sendMessageApi(conversationId, currentUserId, text);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      throw error;
+    } finally {
+      setSending(false);
+    }
   }
 
-
-  // -------------------------
-  // UI
-  // -------------------------
-
   return (
+    <div className="chat-app-shell">
+      <aside className="chat-sidebar">
+        <div className="app-brand">
+          <span className="brand-dot" />
+          <span>ChatWave</span>
+        </div>
 
-    <div>
+        <div className="sidebar-section">
+          <h3>Active chats</h3>
 
-      <ChatHeader
-        conversationId={
-          conversationId
-        }
-        online={
-          online
-        }
-        typing={
-          typing
-        }
-      />
+          <div className="conversation-item active">
+            <div className="conversation-avatar">P</div>
+            <div>
+              <strong>Product Team</strong>
+              <small>4 online</small>
+            </div>
+          </div>
 
+          <div className="conversation-item">
+            <div className="conversation-avatar alt">D</div>
+            <div>
+              <strong>Design Desk</strong>
+              <small>2 offline</small>
+            </div>
+          </div>
+        </div>
+      </aside>
 
-      {loading ? (
-
-        <p>
-          Loading messages...
-        </p>
-
-      ) : (
+      <main className="chat-panel">
+        <ChatHeader
+          conversation={{ name: "Product Team" }}
+          conversationId={conversationId}
+          online={online}
+          typing={typing}
+        />
 
         <MessageList
           messages={messages}
           loading={loading}
+          currentUserId={currentUserId}
         />
 
-      )}
-
-
-      <MessageInput
-        onSend={
-          sendMessage
-        }
-        sending={
-          sending
-        }
-      />
-
+        <MessageInput onSend={sendMessage} sending={sending} />
+      </main>
     </div>
-
   );
-
 }
-
 
 export default ChatPage;

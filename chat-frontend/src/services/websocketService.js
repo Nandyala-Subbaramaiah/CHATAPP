@@ -3,16 +3,19 @@ let socket = null;
 
 export function connectWebSocket(
   conversation_id,
-  onMessage
+  onMessage,
+  userId
 ) {
 
   if (socket) {
     socket.close();
   }
 
-  socket = new WebSocket(
-    `ws://localhost:8000/ws/${conversation_id}`
-  );
+  const wsUrl = userId
+    ? `ws://localhost:8000/ws/${conversation_id}?user_id=${userId}`
+    : `ws://localhost:8000/ws/${conversation_id}`;
+
+  socket = new WebSocket(wsUrl);
 
 
   socket.onopen = () => {

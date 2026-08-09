@@ -10,7 +10,8 @@ import {
 
 function useWebSocket(
   conversation_id,
-  onMessage
+  onMessage,
+  userId
 ) {
 
   useEffect(() => {
@@ -23,7 +24,8 @@ function useWebSocket(
     const socket =
       connectWebSocket(
         conversation_id,
-        onMessage
+        onMessage,
+        userId
       );
 
 
@@ -36,6 +38,7 @@ function useWebSocket(
   }, [
     conversation_id,
     onMessage,
+    userId,
   ]);
 
 }

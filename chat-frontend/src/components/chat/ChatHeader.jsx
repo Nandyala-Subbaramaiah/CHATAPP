@@ -9,35 +9,29 @@ function ChatHeader({
   const name = conversation?.name || `Conversation ${conversationId || "-"}`;
 
   return (
-    <header>
-      {/* User information */}
-      <div>
-        <h2>
-          {name}
-        </h2>
+    <header className="chat-header">
+      <div className="chat-header-profile">
+        <div className="chat-avatar">D</div>
 
-        {typing ? (
+        <div className="chat-header-text">
+          <h2>{name}</h2>
+
           <p>
-            Typing...
+            {typing
+              ? "Typing..."
+              : online
+                ? "Online now"
+                : "Offline"}
           </p>
-        ) : online ? (
-          <p>
-            Online
-          </p>
-        ) : (
-          <p>
-            Offline
-          </p>
-        )}
+        </div>
       </div>
 
-      {/* Header actions */}
-      <div>
-        <button>
+      <div className="chat-header-actions">
+        <button className="icon-button" type="button">
           Search
         </button>
 
-        <button>
+        <button className="icon-button" type="button">
           More
         </button>
       </div>
