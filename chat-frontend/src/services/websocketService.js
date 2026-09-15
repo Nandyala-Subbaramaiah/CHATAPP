@@ -10,16 +10,25 @@ export function connectWebSocket(
     socket.close();
   }
 
-  socket = new WebSocket(
-    `ws://localhost:8000/ws/${conversation_id}`
-  );
+  const backendHost =
+    window.location.hostname === "localhost"
+      ? "127.0.0.1"
+      : window.location.hostname;
+
+  const url =
+    `ws://${backendHost}:8001/ws/${conversation_id}`;
+
+  console.log("Opening WebSocket:", url);
+  socket = new WebSocket(url);
 
 
   socket.onopen = () => {
 
-    console.log(
-      "WebSocket connected"
-    );
+    console.log("WebSocket connected", url);
+    onMessage?.({
+      type: "USER_ONLINE",
+      conversation_id,
+    });
 
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(
@@ -52,16 +61,12 @@ export function connectWebSocket(
       );
 
     }
-
   };
 
 
   socket.onerror = (error) => {
 
-    console.error(
-      "WebSocket error:",
-      error
-    );
+    console.error("WebSocket error:", url, error);
 
   };
 
@@ -71,6 +76,10 @@ export function connectWebSocket(
     console.log(
       "WebSocket disconnected"
     );
+    onMessage?.({
+      type: "USER_OFFLINE",
+      conversation_id,
+    });
 
   };
 

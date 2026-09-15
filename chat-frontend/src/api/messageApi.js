@@ -4,7 +4,7 @@ export async function getMessages(
   conversation_id
 ) {
   const response = await fetch(
-    `http://localhost:8000/messages/${conversation_id}`
+    `http://127.0.0.1:8001/messages/${conversation_id}`
   );
 
   if (!response.ok) {
@@ -22,7 +22,7 @@ export async function sendMessage(
   text
 ) {
   const response = await fetch(
-    "http://localhost:8000/messages/",
+    "http://127.0.0.1:8001/messages/",
     {
       method: "POST",
       headers: {

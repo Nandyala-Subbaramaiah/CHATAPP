@@ -1,6 +1,6 @@
 export async function getUsers() {
   const response = await fetch(
-    "http://localhost:8000/users/"
+    "http://127.0.0.1:8001/users/"
   );
 
   if (!response.ok) {

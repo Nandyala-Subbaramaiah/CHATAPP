@@ -12,7 +12,7 @@ export async function startConversation(
   userId
 ) {
   const response = await fetch(
-    `http://localhost:8000/conversations/start/${userId}`,
+    `http://127.0.0.1:8001/conversations/start/${userId}`,
     {
       method: "POST",
     }
