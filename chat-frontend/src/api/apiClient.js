@@ -4,6 +4,8 @@ export async function apiClient(
   endpoint,
   options = {}
 ) {
+  const token = localStorage.getItem("access_token");
+
   const response = await fetch(
     `${API_BASE_URL}${endpoint}`,
     {
@@ -11,6 +13,9 @@ export async function apiClient(
 
       headers: {
         "Content-Type": "application/json",
+        ...(token
+          ? { Authorization: `Bearer ${token}` }
+          : {}),
         ...options.headers,
       },
     }

@@ -11,18 +11,7 @@ export function getConversation(
 export async function startConversation(
   userId
 ) {
-  const response = await fetch(
-    `http://127.0.0.1:8001/conversations/start/${userId}`,
-    {
-      method: "POST",
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      "Failed to start conversation"
-    );
-  }
-
-  return response.json();
+  return apiClient(`/conversations/start/${userId}`, {
+    method: "POST",
+  });
 }
