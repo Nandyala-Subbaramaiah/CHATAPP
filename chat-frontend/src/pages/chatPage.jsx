@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -42,6 +43,11 @@ function ChatPage() {
     messages,
     setMessages,
   ] = useState([]);
+
+  const [
+    searchQuery,
+    setSearchQuery,
+  ] = useState("");
 
   const [
     loading,
@@ -206,6 +212,24 @@ function ChatPage() {
     handleWebSocketMessage
   );
 
+  const filteredMessages = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return messages;
+    }
+
+    return messages.filter((message) => {
+      const content = message.message ?? message.content ?? "";
+      const sender = message.sender_id ?? message.senderId ?? "";
+
+      return `${content} ${sender}`
+        .toString()
+        .toLowerCase()
+        .includes(query);
+    });
+  }, [messages, searchQuery]);
+
 
   // -------------------------
   // Send message
@@ -261,6 +285,12 @@ function ChatPage() {
         typing={
           typing
         }
+        searchQuery={
+          searchQuery
+        }
+        onSearchChange={
+          setSearchQuery
+        }
       />
 
 
@@ -273,7 +303,7 @@ function ChatPage() {
       ) : (
 
         <MessageList
-          messages={messages}
+          messages={filteredMessages}
           loading={loading}
         />
 

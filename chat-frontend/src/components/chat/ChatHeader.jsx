@@ -5,6 +5,8 @@ function ChatHeader({
   conversationId,
   online,
   typing,
+  searchQuery = "",
+  onSearchChange,
 }) {
   const name = conversation?.name || `Conversation ${conversationId || "-"}`;
 
@@ -33,9 +35,17 @@ function ChatHeader({
 
       {/* Header actions */}
       <div>
-        <button>
-          Search
-        </button>
+        <label>
+          Search messages
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) =>
+              onSearchChange?.(event.target.value)
+            }
+            placeholder="Search messages..."
+          />
+        </label>
 
         <button>
           More
