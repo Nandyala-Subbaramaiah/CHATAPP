@@ -1,5 +1,13 @@
 const API_BASE_URL = "http://127.0.0.1:8001";
 
+export class ApiError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 export async function apiClient(
   endpoint,
   options = {}
@@ -22,9 +30,19 @@ export async function apiClient(
   );
 
   if (!response.ok) {
-    throw new Error(
-      `API Error: ${response.status}`
-    );
+    const responseText = await response.text();
+    let message = `API Error: ${response.status}`;
+
+    if (responseText) {
+      try {
+        const body = JSON.parse(responseText);
+        message = body.detail || body.message || message;
+      } catch {
+        message = responseText;
+      }
+    }
+
+    throw new ApiError(response.status, message);
   }
 
   return response.json();

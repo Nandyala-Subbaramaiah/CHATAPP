@@ -111,9 +111,7 @@ function ChatPage() {
         "Failed to load messages:",
         error
       );
-      setLoadError(
-        "Couldn't load messages. Try again."
-      );
+      setLoadError("Couldn't load messages. Try again.");
 
     } finally {
 
@@ -271,11 +269,21 @@ function ChatPage() {
       setSendError("");
       setSending(true);
 
-      await sendMessageApi(
+      const sentMessage = await sendMessageApi(
         conversationId,
         currentUserId,
         text
       );
+
+      setMessages((currentMessages) => {
+        const alreadyReceived = currentMessages.some(
+          (message) => message.id === sentMessage.id
+        );
+
+        return alreadyReceived
+          ? currentMessages
+          : [...currentMessages, sentMessage];
+      });
 
     } catch (error) {
 
@@ -283,9 +291,7 @@ function ChatPage() {
         "Failed to send message:",
         error
       );
-      setSendError(
-        "Message wasn't sent. Please try again."
-      );
+      setSendError("Message wasn't sent. Please try again.");
 
       throw error;
 
