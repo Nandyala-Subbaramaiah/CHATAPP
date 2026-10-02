@@ -7,7 +7,9 @@ function MessageInput({
   const [message, setMessage] =
     useState("");
 
-  async function handleSend() {
+  async function handleSend(event) {
+    event.preventDefault();
+
     if (!message.trim() || !onSend) {
       return;
     }
@@ -24,26 +26,21 @@ function MessageInput({
   }
 
   return (
-    <div>
+    <form className="message-composer" onSubmit={handleSend}>
       <input
+        aria-label="Type a message"
         value={message}
-        onChange={(event) =>
-          setMessage(
-            event.target.value
-          )
-        }
+        onChange={(event) => setMessage(event.target.value)}
         placeholder="Type a message..."
       />
-
       <button
-        onClick={handleSend}
-        disabled={sending}
+        className="send-button"
+        type="submit"
+        disabled={sending || !message.trim()}
       >
-        {sending
-          ? "Sending..."
-          : "Send"}
+        {sending ? "Sending..." : "Send"}
       </button>
-    </div>
+    </form>
   );
 }
 

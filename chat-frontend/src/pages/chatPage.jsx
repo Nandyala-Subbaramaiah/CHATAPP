@@ -17,6 +17,7 @@ import {
   getMessages,
   sendMessage as sendMessageApi,
 } from "../api/messageApi";
+import { getConversation } from "../api/conversationApi";
 
 import useWebSocket from "../hooks/useWebSocket";
 
@@ -45,6 +46,11 @@ function ChatPage() {
   ] = useState([]);
 
   const [
+    conversation,
+    setConversation,
+  ] = useState(null);
+
+  const [
     searchQuery,
     setSearchQuery,
   ] = useState("");
@@ -55,9 +61,19 @@ function ChatPage() {
   ] = useState(true);
 
   const [
+    loadError,
+    setLoadError,
+  ] = useState("");
+
+  const [
     sending,
     setSending,
   ] = useState(false);
+
+  const [
+    sendError,
+    setSendError,
+  ] = useState("");
 
   const [
     online,
@@ -79,19 +95,24 @@ function ChatPage() {
     try {
 
       setLoading(true);
+      setLoadError("");
 
-      const data =
-        await getMessages(
-          conversationId
-        );
+      const [data, conversationData] = await Promise.all([
+        getMessages(conversationId),
+        getConversation(conversationId),
+      ]);
 
       setMessages(data);
+      setConversation(conversationData);
 
     } catch (error) {
 
       console.error(
         "Failed to load messages:",
         error
+      );
+      setLoadError(
+        "Couldn't load messages. Try again."
       );
 
     } finally {
@@ -230,6 +251,12 @@ function ChatPage() {
     });
   }, [messages, searchQuery]);
 
+  const otherParticipant = conversation?.participants?.find(
+    (participant) => String(participant.user_id) !== String(currentUserId)
+  );
+  const conversationName =
+    otherParticipant?.username || `Conversation ${conversationId || "-"}`;
+
 
   // -------------------------
   // Send message
@@ -241,6 +268,7 @@ function ChatPage() {
 
     try {
 
+      setSendError("");
       setSending(true);
 
       await sendMessageApi(
@@ -254,6 +282,9 @@ function ChatPage() {
       console.error(
         "Failed to send message:",
         error
+      );
+      setSendError(
+        "Message wasn't sent. Please try again."
       );
 
       throw error;
@@ -273,9 +304,10 @@ function ChatPage() {
 
   return (
 
-    <div>
+    <main className="chat-shell">
 
       <ChatHeader
+        conversation={{ name: conversationName }}
         conversationId={
           conversationId
         }
@@ -296,15 +328,24 @@ function ChatPage() {
 
       {loading ? (
 
-        <p>
+        <p className="chat-state">
           Loading messages...
         </p>
+
+      ) : loadError ? (
+
+        <div className="chat-state chat-state--error" role="alert">
+          <p>{loadError}</p>
+          <button className="text-button" onClick={loadMessages}>
+            Retry
+          </button>
+        </div>
 
       ) : (
 
         <MessageList
           messages={filteredMessages}
-          loading={loading}
+          currentUserId={currentUserId}
         />
 
       )}
@@ -319,7 +360,13 @@ function ChatPage() {
         }
       />
 
-    </div>
+      {sendError && (
+        <p className="send-error" role="alert">
+          {sendError}
+        </p>
+      )}
+
+    </main>
 
   );
 

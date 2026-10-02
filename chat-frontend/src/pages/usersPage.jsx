@@ -13,12 +13,17 @@ function UsersPage() {
   }
 
   return (
-    <div>
-      <h1>Users</h1>
-      <button onClick={handleLogout}>Sign out</button>
-
+    <main className="contacts-shell">
+      <header className="contacts-header">
+        <div>
+          <p className="eyebrow">CHATAPP</p>
+          <h1>Chats</h1>
+        </div>
+        <button className="text-button" onClick={handleLogout}>Sign out</button>
+      </header>
+      <p className="contacts-hint">Choose someone to start a conversation.</p>
       <UserList />
-    </div>
+    </main>
   );
 }
 

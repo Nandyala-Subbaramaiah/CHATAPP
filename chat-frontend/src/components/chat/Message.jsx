@@ -1,24 +1,32 @@
 import React from "react";
 
-function Message({ message }) {
+function Message({ message, currentUserId }) {
   const createdAt = message.created_at || message.createdAt;
+  const senderId = message.sender_id ?? message.senderId;
+  const isOutgoing = String(senderId) === String(currentUserId);
+  const time = createdAt
+    ? new Date(createdAt).toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "Just now";
 
   return (
-    <div>
-      <strong>
-        {message.sender_id ?? message.senderId ?? "User"}
-      </strong>
-
-      <p>
-        {message.message ?? message.content}
-      </p>
-
-      <small>
-        {createdAt
-          ? new Date(createdAt).toLocaleString()
-          : "Just now"}
-      </small>
-    </div>
+    <article className={`message-row${isOutgoing ? " message-row--outgoing" : ""}`}>
+      <div className="message-bubble">
+        {!isOutgoing && (
+          <strong className="message-sender">
+            {senderId ?? "User"}
+          </strong>
+        )}
+        <p className="message-text">
+          {message.message ?? message.content}
+        </p>
+        <time className="message-time" dateTime={createdAt || undefined}>
+          {time}
+        </time>
+      </div>
+    </article>
   );
 }
 

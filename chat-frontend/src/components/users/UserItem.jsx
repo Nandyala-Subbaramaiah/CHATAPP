@@ -12,6 +12,7 @@ function UserItem({ user }) {
 
   const navigate =
     useNavigate();
+  const name = user.name || user.username || "Unknown user";
 
 
   async function handleChat() {
@@ -41,21 +42,18 @@ function UserItem({ user }) {
 
   return (
 
-    <div>
-
-      <span>
-        {user.name}
-      </span>
-
+    <article className="user-item">
+      <div className="avatar" aria-hidden="true">
+        {(name.trim().charAt(0) || "?").toUpperCase()}
+      </div>
+      <span className="user-item__name">{name}</span>
       <button
-        onClick={
-          handleChat
-        }
+        className="user-item__action"
+        onClick={handleChat}
       >
-        Chat
+        Message
       </button>
-
-    </div>
+    </article>
 
   );
 

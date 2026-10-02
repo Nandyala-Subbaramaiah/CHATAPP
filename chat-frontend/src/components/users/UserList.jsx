@@ -29,22 +29,23 @@ function UserList() {
   }, []);
 
   if (loading) {
-    return <p>Loading users...</p>;
+    return <p className="chat-state">Loading contacts...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="chat-state chat-state--error" role="alert">{error}</p>;
   }
 
   return (
-    <div>
+    <section className="user-list" aria-label="Contacts">
       {users.map((user) => (
         <UserItem
           key={user.id}
           user={user}
         />
       ))}
-    </div>
+      {users.length === 0 && <p className="empty-messages">No contacts found.</p>}
+    </section>
   );
 }
 
