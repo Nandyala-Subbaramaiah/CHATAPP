@@ -1,3 +1,5 @@
+import { WS_BASE_URL } from "../config";
+
 let socket = null;
 
 
@@ -10,13 +12,7 @@ export function connectWebSocket(
     socket.close();
   }
 
-  const backendHost =
-    window.location.hostname === "localhost"
-      ? "127.0.0.1"
-      : window.location.hostname;
-
-  const url =
-    `ws://${backendHost}:8001/ws/${conversation_id}`;
+  const url = `${WS_BASE_URL}/ws/${conversation_id}`;
 
   console.log("Opening WebSocket:", url);
   socket = new WebSocket(url);
