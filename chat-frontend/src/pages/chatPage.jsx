@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -85,41 +86,55 @@ function ChatPage() {
     setTyping,
   ] = useState(false);
 
+  const loadRequestId = useRef(0);
+
 
   // -------------------------
   // Load messages
   // -------------------------
 
-  async function loadMessages() {
-
-    try {
-
-      setLoading(true);
-      setLoadError("");
-
-      const [data, conversationData] = await Promise.all([
-        getMessages(conversationId),
-        getConversation(conversationId),
-      ]);
-
-      setMessages(data);
-      setConversation(conversationData);
-
-    } catch (error) {
-
-      console.error(
-        "Failed to load messages:",
-        error
-      );
-      setLoadError("Couldn't load messages. Try again.");
-
-    } finally {
-
-      setLoading(false);
-
+  const loadMessages = useCallback(async () => {
+    if (!conversationId) {
+      return;
     }
 
-  }
+    const requestId = ++loadRequestId.current;
+
+    setLoading(true);
+    setLoadError("");
+
+    getConversation(conversationId)
+      .then((data) => {
+        if (requestId === loadRequestId.current) {
+          setConversation(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load conversation:", error);
+        if (requestId === loadRequestId.current) {
+          setConversation(null);
+        }
+      });
+
+    try {
+      const data = await getMessages(conversationId);
+      if (requestId === loadRequestId.current) {
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error("Failed to load messages:", error);
+      if (requestId === loadRequestId.current) {
+        const details = error instanceof Error
+          ? error.message
+          : "Unknown error";
+        setLoadError(`Couldn't load messages. ${details} Try again.`);
+      }
+    } finally {
+      if (requestId === loadRequestId.current) {
+        setLoading(false);
+      }
+    }
+  }, [conversationId]);
 
 
   // -------------------------
@@ -128,16 +143,16 @@ function ChatPage() {
   // -------------------------
 
   useEffect(() => {
-
     if (!conversationId) {
       return;
     }
 
     loadMessages();
 
-  }, [
-    conversationId,
-  ]);
+    return () => {
+      loadRequestId.current += 1;
+    };
+  }, [conversationId, loadMessages]);
 
 
   // -------------------------

@@ -372,6 +372,82 @@ button {
   padding: 0 14px;
 }
 
+.practice-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.practice-card {
+  width: min(100%, 560px);
+  padding: 32px;
+  border: 1px solid #e7ece8;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 60px rgb(31 57 44 / 14%);
+}
+
+.practice-card h1 {
+  margin: 0;
+  color: #1a3026;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.practice-description {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.practice-example {
+  margin: 24px 0;
+  padding: 16px;
+  border: 1px solid #e7ece8;
+  border-radius: 12px;
+  background: #f7f9f7;
+}
+
+.practice-example__label {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.practice-greeting {
+  margin: 0;
+  color: var(--green-dark);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.practice-subheading {
+  margin: 24px 0 8px;
+  color: #1a3026;
+  font-size: 16px;
+}
+
+.practice-steps {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 22px;
+  color: #415248;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.practice-code {
+  overflow-x: auto;
+  margin: 20px 0 0;
+  padding: 16px;
+  border-radius: 10px;
+  background: #20352b;
+  color: #e4f3e9;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

@@ -12,6 +12,12 @@ import { isAuthenticated } from "./api/authApi";
 import LoginPage from "./pages/loginPage";
 import UsersPage from "./pages/usersPage";
 import ChatPage from "./pages/chatPage";
+import ContextPractice from "./pages/ContextPractice";
+import { CartProvider } from "./features/cart/CartContext";
+import CartPage from "./features/cart/pages/CartPage";
+import ProductPage from "./features/shop/pages/ProductPage";
+import ShopPage from "./features/shop/pages/ShopPage";
+import "./features/shop/shop.css";
 
 function ProtectedRoute({ children }) {
   const location = useLocation();
@@ -25,34 +31,45 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <CartProvider>
+      <BrowserRouter>
+        <Routes>
 
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <UsersPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/practice-context"
+            element={<ContextPractice />}
+          />
 
-        <Route
-          path="/chat/:conversationId"
-          element={
-            <ProtectedRoute>
-              <ChatPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/products/:productId" element={<ProductPage />} />
+          <Route path="/cart" element={<CartPage />} />
 
-      </Routes>
-    </BrowserRouter>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <UsersPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/chat/:conversationId"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            }
+          />
+
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
 
